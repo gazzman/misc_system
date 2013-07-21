@@ -5,17 +5,17 @@ import urllib2
 
 from BeautifulSoup import BeautifulSoup
 
-LOGFILE="/var/log/wanIP.log"
 WANIDURL="http://www.google.com/search?q=what+is+my+ip"
 LOGFILEFMT = "%(date)s,%(hostname)s,%(ip)s\n"
 UASTRING = 'Mozilla/5.0 (X11; Linux x86_64; rv:10.0.1) Gecko/20120225 Firefox/10.0.1'
 
 if __name__ == '__main__':
-    hostname = sys.argv[1]
-    password = sys.argv[2]
+    logfile = sys.argv[1]
+    hostname = sys.argv[2]
+    password = sys.argv[3]
     ipdict = {hostname: ""}
     try:
-        with open(LOGFILE, 'r') as lfile:
+        with open(logfile, 'r') as lfile:
         	for line in lfile:
         		date, host, oldip = line.strip().split(',')
         		ipdict[host] = oldip
@@ -36,7 +36,11 @@ if __name__ == '__main__':
         url_hostpath = "%s%s" % (url_host, url_path)
         req = urllib2.Request(url_hostpath, headers=header)
         page = urllib2.urlopen(req)
-        with open(LOGFILE, 'a') as lfile:
+        msg = "Updating IP for host %s from '%s' to '%s'" % (hostname, 
+                                                             ipdict[hostname],
+                                                             newip)
+        print >> sys.stderr, msg
+        with open(logfile, 'a') as lfile:
             lfile.write(LOGFILEFMT % {'date': datetime.now().isoformat(), 
                                       'hostname': hostname, 
                                       'ip': newip})
