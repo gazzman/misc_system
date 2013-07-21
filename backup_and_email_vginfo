@@ -1,0 +1,10 @@
+#!/bin/bash
+OFILE=~/vgcfgbackup_out
+/sbin/lvm vgcfgbackup &> $OFILE
+cd /etc/lvm/backup
+ARGS=""
+for f in `ls`
+do
+    ARGS="$ARGS -a $f"
+done
+mail $ARGS -s "Cron <$USER@$HOSTNAME> vgcfgbackup files" -q $OFILE root
